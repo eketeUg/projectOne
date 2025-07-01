@@ -1,0 +1,19 @@
+{
+  "name": "query-screenpipe",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run index.ts",
+    "install:ollama": "bash scripts/install-ollama.sh"
+  },
+  "dependencies": {
+    "@screenpipe/browser": "^0.1.40",
+    "@screenpipe/js": "^1.0.21"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
