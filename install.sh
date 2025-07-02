@@ -1,26 +1,43 @@
 #!/bin/sh
 
-# macOS Homebrew OpenSSL CA cert fix
+# ===========================================
+# Ensure Homebrew is installed (macOS only)
+# ===========================================
 if [ "$(uname)" = "Darwin" ]; then
+    if ! command -v brew >/dev/null 2>&1; then
+        echo "[*] Homebrew not found. Installing Homebrew..."
+
+        NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+        # Add Homebrew to PATH for current session
+        eval "$(/opt/homebrew/bin/brew shellenv)" || \
+        eval "$(/usr/local/bin/brew shellenv)" || true
+    else
+        echo "[*] Homebrew is already installed."
+    fi
+
+    # ===========================================
+    # Fix OpenSSL CA Cert Path for curl
+    # ===========================================
     CERT_FILE="/opt/homebrew/opt/openssl@3/etc/openssl/cert.pem"
+    ALT_CERT="/opt/homebrew/etc/ca-certificates/cert.pem"
+
     if [ ! -f "$CERT_FILE" ]; then
-        echo "CA certificate not found at $CERT_FILE. Attempting to fix..."
-        if command -v brew >/dev/null 2>&1; then
-            brew install openssl@3 || true
-            brew reinstall ca-certificates || true
-            brew link --force --overwrite ca-certificates || true
-            # Try to create the symlink if still missing
-            if [ ! -f "$CERT_FILE" ] && [ -f "/opt/homebrew/etc/ca-certificates/cert.pem" ]; then
-                ln -sf /opt/homebrew/etc/ca-certificates/cert.pem "$CERT_FILE"
-                echo "Symlinked ca-certificates to $CERT_FILE."
-            fi
+        echo "[*] CA cert not found at $CERT_FILE. Attempting to fix..."
+
+        brew reinstall openssl@3 ca-certificates
+        brew link --force --overwrite ca-certificates
+
+        if [ -f "$ALT_CERT" ]; then
+            echo "[*] Symlinking $ALT_CERT → $CERT_FILE"
+            ln -sf "$ALT_CERT" "$CERT_FILE"
         else
-            echo "Homebrew not found. Please install Homebrew and try again."
-            exit 1
+            echo "[!] Alternate CA file not found at $ALT_CERT"
         fi
     fi
-    # Optionally, export SSL_CERT_FILE for this script
-    export SSL_CERT_FILE="/opt/homebrew/etc/ca-certificates/cert.pem"
+
+    export SSL_CERT_FILE="$ALT_CERT"
+    echo "[*] Set SSL_CERT_FILE=$SSL_CERT_FILE"
 fi
 
 # Function to detect OS and architecture
