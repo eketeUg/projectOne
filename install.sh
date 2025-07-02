@@ -1,5 +1,28 @@
 #!/bin/sh
 
+# macOS Homebrew OpenSSL CA cert fix
+if [ "$(uname)" = "Darwin" ]; then
+    CERT_FILE="/opt/homebrew/opt/openssl@3/etc/openssl/cert.pem"
+    if [ ! -f "$CERT_FILE" ]; then
+        echo "CA certificate not found at $CERT_FILE. Attempting to fix..."
+        if command -v brew >/dev/null 2>&1; then
+            brew install openssl@3 || true
+            brew reinstall ca-certificates || true
+            brew link --force --overwrite ca-certificates || true
+            # Try to create the symlink if still missing
+            if [ ! -f "$CERT_FILE" ] && [ -f "/opt/homebrew/etc/ca-certificates/cert.pem" ]; then
+                ln -sf /opt/homebrew/etc/ca-certificates/cert.pem "$CERT_FILE"
+                echo "Symlinked ca-certificates to $CERT_FILE."
+            fi
+        else
+            echo "Homebrew not found. Please install Homebrew and try again."
+            exit 1
+        fi
+    fi
+    # Optionally, export SSL_CERT_FILE for this script
+    export SSL_CERT_FILE="/opt/homebrew/etc/ca-certificates/cert.pem"
+fi
+
 # Function to detect OS and architecture
 get_os_arch() {
     os=$(uname -s | tr '[:upper:]' '[:lower:]')
