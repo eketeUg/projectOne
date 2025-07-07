@@ -41,7 +41,7 @@ get_os_arch() {
 }
 
 echo "fetching latest version from github..."
-LATEST_RELEASE=$(curl -s https://api.github.com/repos/mediar-ai/screenpipe/releases/latest)
+LATEST_RELEASE=$(curl -s https://github.com/mediar-ai/screenpipe/releases/download/v0.2.74/screenpipe-0.2.74-aarch64-apple-darwin.tar.gz)
 # Extract version using grep and sed for cross-platform compatibility
 VERSION=$(echo "$LATEST_RELEASE" | grep -o '"tag_name": *"v[^"]*"' | sed 's/.*"v\([^"]*\)".*/\1/')
 if [ -z "$VERSION" ]; then
