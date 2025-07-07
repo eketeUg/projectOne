@@ -85,9 +85,6 @@ try {
     Write-Host "1. restart your terminal"
     Write-Host "2. run: screenpipe"
     Write-Host ""
-    Write-Host "join our discord: https://discord.gg/dU9EBuw7Uq"
-    Write-Host "check the docs: https://docs.screenpi.pe"
-
     try {
         $postHogData = @{
             api_key    = "phc_Bt8GoTBPgkCpDrbaIZzJIEYt0CrJjhBiuLaBck1clce"
