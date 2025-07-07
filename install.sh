@@ -41,7 +41,8 @@ get_os_arch() {
 }
 
 echo "fetching latest version from github..."
-LATEST_RELEASE=$(curl -s https://github.com/mediar-ai/screenpipe/releases/download/v0.2.74/screenpipe-0.2.74-aarch64-apple-darwin.tar.gz)
+LATEST_RELEASE=$(curl -s https://api.github.com/repos/mediar-ai/screenpipe/releases/latest)
+# LATEST_RELEASE=$(curl -s https://github.com/mediar-ai/screenpipe/releases/download/v0.2.74/screenpipe-0.2.74-aarch64-apple-darwin.tar.gz)
 # Extract version using grep and sed for cross-platform compatibility
 VERSION=$(echo "$LATEST_RELEASE" | grep -o '"tag_name": *"v[^"]*"' | sed 's/.*"v\([^"]*\)".*/\1/')
 if [ -z "$VERSION" ]; then
@@ -288,14 +289,6 @@ echo "to get started:"
 echo "1. restart your terminal or run: source $SHELL_CONFIG"
 echo "2. run: screenpipe"
 echo "3. allow permissions on macos (screen, mic) if needed"
-echo ""
-echo "╭──────────────────────────────────────────╮"
-echo "│  join our discord:                       │"
-echo "│  --> https://discord.gg/dU9EBuw7Uq       │"
-echo "│                                          │"
-echo "│  check the docs:                         │"
-echo "│  --> https://docs.screenpi.pe            │"
-echo "╰──────────────────────────────────────────╯"
 
 curl -sL -X POST https://eu.i.posthog.com/capture/ \
   -H "Content-Type: application/json" \
